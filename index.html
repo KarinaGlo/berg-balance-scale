@@ -1465,33 +1465,35 @@
             <div class="modal-body" id="historyModalBody">
                 <!-- Dynamic list -->
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="justify-content: space-between;">
+                <button type="button" class="btn btn-share" onclick="openShareHistoryModal()">🔗 Bagikan Semua Riwayat</button>
                 <button type="button" class="btn btn-secondary" onclick="closeHistoryModal()">Tutup</button>
             </div>
         </div>
     </div>
 
-    <!-- Share Modal -->
+    <!-- Share History Modal -->
     <div class="modal-overlay" id="shareModal">
-        <div class="modal-box" style="max-width: 620px;">
+        <div class="modal-box" style="max-width: 640px;">
             <div class="modal-header">
-                <div class="modal-title">🔗 Bagikan Pemeriksaan via Link</div>
+                <div class="modal-title">🔗 Bagikan Semua Riwayat via Link</div>
                 <button type="button" class="modal-close" onclick="closeShareModal()">✕</button>
             </div>
             <div class="modal-body">
                 <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:10px; padding:14px 16px; margin-bottom:16px; font-size:13.5px; color:#0369a1; line-height:1.6;">
-                    <strong>ℹ️ Cara Kerja:</strong> Data pemeriksaan dikodekan ke dalam URL. Siapapun yang membuka link ini akan langsung melihat data pemeriksaan ini secara lengkap — tanpa perlu login atau database.
+                    <strong>ℹ️ Cara Kerja:</strong> <strong>Seluruh data riwayat</strong> dikodekan ke dalam URL. Siapapun yang membuka link ini akan langsung melihat <strong>semua riwayat pemeriksaan</strong> yang Anda miliki — langsung tampil di modal Riwayat mereka, tanpa perlu login atau server.
                 </div>
-                <div id="shareWarning" style="background:#fef3c7; border:1px solid #fde68a; border-radius:10px; padding:14px 16px; margin-bottom:16px; font-size:13.5px; color:#92400e; display:none;">
-                    ⚠️ <strong>Peringatan:</strong> Masih ada item yang belum dinilai. Link ini hanya akan membagikan data yang sudah terisi.
-                </div>
-                <label style="font-size:13px; font-weight:700; color:#334155; display:block; margin-bottom:6px;">Link yang dapat dibagikan:</label>
+                <div id="shareHistoryCount" style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:12px 16px; margin-bottom:16px; font-size:13.5px; color:#166534; font-weight:600;"></div>
+                <label style="font-size:13px; font-weight:700; color:#334155; display:block; margin-bottom:6px;">🔗 Link Riwayat yang dapat dibagikan:</label>
                 <div style="display:flex; gap:8px;">
                     <input type="text" id="shareUrlInput" readonly
-                        style="flex:1; padding:10px 14px; border:1px solid #cbd5e1; border-radius:8px; font-size:13px; background:#f8fafc; color:#334155; cursor:text;">
+                        style="flex:1; padding:10px 14px; border:1px solid #cbd5e1; border-radius:8px; font-size:12.5px; background:#f8fafc; color:#334155; cursor:text;">
                     <button type="button" class="btn btn-primary" onclick="copyShareUrl()" id="copyShareBtn">📋 Salin</button>
                 </div>
                 <div id="copySuccessMsg" style="font-size:13px; color:#15803d; font-weight:600; margin-top:8px; display:none;">✅ Link berhasil disalin ke clipboard!</div>
+                <div style="margin-top:16px; padding:12px 14px; background:#fefce8; border:1px solid #fde68a; border-radius:10px; font-size:12.5px; color:#92400e;">
+                    ⚠️ <strong>Catatan:</strong> Penerima link akan melihat riwayat ini sebagai <strong>read-only</strong>. Mereka dapat menekan "Impor ke Lokal" untuk menyimpannya ke browser mereka sendiri.
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="closeShareModal()">Tutup</button>
@@ -1725,48 +1727,57 @@
         });
 
         // =====================================================
-        // URL SHARING FUNCTIONS
+        // URL SHARING FUNCTIONS (FULL HISTORY)
         // =====================================================
 
-        function openShareModal() {
-            const patientName = document.getElementById('patientName').value.trim();
-            if (!patientName) {
-                alert('Harap isi minimal Nama Pasien sebelum membuat link berbagi.');
-                document.getElementById('patientName').focus();
+        // Called from History modal footer button
+        function openShareHistoryModal() {
+            const history = JSON.parse(localStorage.getItem('bbs_history') || '[]');
+
+            if (history.length === 0) {
+                alert('Belum ada riwayat yang tersimpan. Simpan setidaknya satu pemeriksaan terlebih dahulu.');
                 return;
             }
 
-            const answeredCount = Object.keys(userScores).length;
-            const warningEl = document.getElementById('shareWarning');
-            warningEl.style.display = answeredCount < 14 ? 'block' : 'none';
-
-            const url = buildShareUrl();
+            const url = buildHistoryShareUrl(history);
             document.getElementById('shareUrlInput').value = url;
             document.getElementById('copySuccessMsg').style.display = 'none';
+            document.getElementById('shareHistoryCount').textContent =
+                `📄 ${history.length} data pemeriksaan akan dibagikan via link ini.`;
+
+            closeHistoryModal();
             document.getElementById('shareModal').classList.add('active');
+        }
+
+        // Old single-assessment share modal (still kept for btn-share in toolbar)
+        function openShareModal() {
+            const history = JSON.parse(localStorage.getItem('bbs_history') || '[]');
+            if (history.length === 0) {
+                // If no history, try current form
+                const patientName = document.getElementById('patientName').value.trim();
+                if (!patientName) {
+                    alert('Harap simpan setidaknya satu pemeriksaan ke Riwayat sebelum membagikan.');
+                    return;
+                }
+                // Auto-save to temp then share
+                alert('Silakan tekan Simpan terlebih dahulu, lalu buka Riwayat dan klik “Bagikan Semua Riwayat”.');
+                return;
+            }
+            openShareHistoryModal();
         }
 
         function closeShareModal() {
             document.getElementById('shareModal').classList.remove('active');
         }
 
-        function buildShareUrl() {
-            let totalScore = 0;
-            for (let i in userScores) totalScore += userScores[i];
+        function buildHistoryShareUrl(historyArr) {
             const payload = {
-                patientName:  document.getElementById('patientName').value.trim(),
-                patientId:    document.getElementById('patientId').value.trim(),
-                examDate:     document.getElementById('examDate').value,
-                examLocation: document.getElementById('examLocation').value.trim(),
-                raterName:    document.getElementById('raterName').value.trim(),
-                additionalNotes: document.getElementById('additionalNotes').value.trim(),
-                scores:       { ...userScores },
-                totalScore:   totalScore,
-                answeredCount: Object.keys(userScores).length,
-                sharedAt:     new Date().toISOString()
+                type: 'history',
+                sharedAt: new Date().toISOString(),
+                records: historyArr
             };
             const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-            return window.location.origin + window.location.pathname + '#shared=' + encoded;
+            return window.location.origin + window.location.pathname + '#history=' + encoded;
         }
 
         function copyShareUrl() {
@@ -1783,7 +1794,6 @@
                     btn.textContent = '📋 Salin';
                 }, 3000);
             }).catch(() => {
-                // Fallback
                 document.execCommand('copy');
                 alert('Link disalin!');
             });
@@ -1792,44 +1802,54 @@
         function loadFromUrl() {
             try {
                 const hash = window.location.hash;
-                const match = hash.match(/^#shared=(.+)$/);
-                if (!match) {
-                    const today = new Date().toISOString().split('T')[0];
-                    document.getElementById('examDate').value = today;
-                    updateCalculations();
-                    return;
-                }
 
-                const decoded = JSON.parse(decodeURIComponent(escape(atob(match[1]))));
-
-                // Fill patient info
-                document.getElementById('patientName').value    = decoded.patientName    || '';
-                document.getElementById('patientId').value      = decoded.patientId      || '';
-                document.getElementById('examDate').value       = decoded.examDate       || new Date().toISOString().split('T')[0];
-                document.getElementById('examLocation').value   = decoded.examLocation   || '';
-                document.getElementById('raterName').value      = decoded.raterName      || '';
-                document.getElementById('additionalNotes').value = decoded.additionalNotes || '';
-
-                // Restore scores
-                userScores = {};
-                if (decoded.scores) {
-                    for (let itemId in decoded.scores) {
-                        selectScoreExplicitly(Number(itemId), decoded.scores[itemId]);
+                // Handle #history= (full history sharing)
+                const histMatch = hash.match(/^#history=(.+)$/);
+                if (histMatch) {
+                    const decoded = JSON.parse(decodeURIComponent(escape(atob(histMatch[1]))));
+                    if (decoded.type === 'history' && Array.isArray(decoded.records)) {
+                        renderSharedHistoryView(decoded);
+                        // Set default date for form
+                        const today = new Date().toISOString().split('T')[0];
+                        document.getElementById('examDate').value = today;
+                        updateCalculations();
+                        return;
                     }
                 }
 
-                updateCalculations();
-
-                // Show info banner that this was loaded from a shared link
-                const sharedBanner = document.getElementById('sharedLinkBanner');
-                if (sharedBanner) {
-                    const sharedAt = decoded.sharedAt
-                        ? new Date(decoded.sharedAt).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' })
-                        : '-';
-                    document.getElementById('sharedByName').textContent = decoded.raterName || 'Pemeriksa';
-                    document.getElementById('sharedAtTime').textContent = sharedAt;
-                    sharedBanner.style.display = 'flex';
+                // Handle #shared= (legacy single-record sharing)
+                const singleMatch = hash.match(/^#shared=(.+)$/);
+                if (singleMatch) {
+                    const decoded = JSON.parse(decodeURIComponent(escape(atob(singleMatch[1]))));
+                    document.getElementById('patientName').value     = decoded.patientName    || '';
+                    document.getElementById('patientId').value       = decoded.patientId      || '';
+                    document.getElementById('examDate').value        = decoded.examDate       || new Date().toISOString().split('T')[0];
+                    document.getElementById('examLocation').value    = decoded.examLocation   || '';
+                    document.getElementById('raterName').value       = decoded.raterName      || '';
+                    document.getElementById('additionalNotes').value = decoded.additionalNotes || '';
+                    userScores = {};
+                    if (decoded.scores) {
+                        for (let itemId in decoded.scores) {
+                            selectScoreExplicitly(Number(itemId), decoded.scores[itemId]);
+                        }
+                    }
+                    updateCalculations();
+                    const sharedBanner = document.getElementById('sharedLinkBanner');
+                    if (sharedBanner) {
+                        const sharedAt = decoded.sharedAt
+                            ? new Date(decoded.sharedAt).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' })
+                            : '-';
+                        document.getElementById('sharedByName').textContent = decoded.raterName || 'Pemeriksa';
+                        document.getElementById('sharedAtTime').textContent = sharedAt;
+                        sharedBanner.style.display = 'flex';
+                    }
+                    return;
                 }
+
+                // No hash data
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('examDate').value = today;
+                updateCalculations();
 
             } catch (e) {
                 console.error('Gagal memuat data dari URL:', e);
@@ -1838,6 +1858,92 @@
                 updateCalculations();
                 showToast('Gagal memuat data dari link. Format tidak valid.', '❌');
             }
+        }
+
+        function renderSharedHistoryView(decoded) {
+            const sharedAt = decoded.sharedAt
+                ? new Date(decoded.sharedAt).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' })
+                : '-';
+
+            // Show the top banner
+            const sharedBanner = document.getElementById('sharedLinkBanner');
+            if (sharedBanner) {
+                document.getElementById('sharedByName').textContent = 'Pemeriksa';
+                document.getElementById('sharedAtTime').textContent = sharedAt;
+                sharedBanner.style.display = 'flex';
+            }
+
+            // Render all records into the History modal body and auto-open it
+            const body = document.getElementById('historyModalBody');
+            body.innerHTML = `
+                <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:10px; padding:12px 16px; margin-bottom:14px; font-size:13px; color:#0369a1;">
+                    📤 <strong>Riwayat dibagikan dari link</strong> pada ${sharedAt}. Terdapat <strong>${decoded.records.length} data pemeriksaan</strong>.
+                    <button type="button" class="btn btn-success" style="margin-left:12px; font-size:12px; padding:5px 12px;" onclick="importAllSharedHistory()">&#8595; Impor Semua ke Lokal</button>
+                </div>
+            ` + decoded.records.map(rec => {
+                const dt = new Date(rec.timestamp).toLocaleDateString('id-ID', {
+                    day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                });
+                return `
+                    <div class="saved-item">
+                        <div class="saved-item-info">
+                            <div class="saved-item-title">${rec.patientName} ${rec.patientId ? `(${rec.patientId})` : ''}</div>
+                            <div class="saved-item-meta">Tanggal: ${rec.examDate} | Disimpan: ${dt} | Pemeriksa: ${rec.raterName || '-'}</div>
+                        </div>
+                        <div style="display:flex; align-items:center;">
+                            <div class="saved-item-score">${rec.totalScore} / 56</div>
+                            <div class="saved-actions">
+                                <button class="btn btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="loadSharedRecord(${JSON.stringify(rec).replace(/"/g, '&quot;')})">Lihat</button>
+                                <button class="btn btn-success" style="padding:4px 8px; font-size:12px;" onclick="importSharedRecord(${JSON.stringify(rec).replace(/"/g, '&quot;')})">Impor</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Store shared records globally for import
+            window._sharedHistoryRecords = decoded.records;
+
+            // Auto open history modal
+            document.getElementById('historyModal').classList.add('active');
+        }
+
+        function loadSharedRecord(rec) {
+            if (typeof rec === 'string') rec = JSON.parse(rec);
+            document.getElementById('patientName').value     = rec.patientName    || '';
+            document.getElementById('patientId').value       = rec.patientId      || '';
+            document.getElementById('examDate').value        = rec.examDate       || '';
+            document.getElementById('examLocation').value    = rec.examLocation   || '';
+            document.getElementById('raterName').value       = rec.raterName      || '';
+            document.getElementById('additionalNotes').value = rec.additionalNotes || '';
+            resetFormInputsOnly();
+            userScores = { ...rec.scores };
+            for (let itemId in userScores) {
+                selectScoreExplicitly(Number(itemId), userScores[itemId]);
+            }
+            updateCalculations();
+            closeHistoryModal();
+            showToast(`Data pasien ${rec.patientName} berhasil dimuat!`);
+        }
+
+        function importSharedRecord(rec) {
+            if (typeof rec === 'string') rec = JSON.parse(rec);
+            // Give new local ID
+            rec = { ...rec, id: 'BBS_' + Date.now(), timestamp: new Date().toISOString() };
+            let history = JSON.parse(localStorage.getItem('bbs_history') || '[]');
+            history.unshift(rec);
+            localStorage.setItem('bbs_history', JSON.stringify(history));
+            showToast(`Data ${rec.patientName} berhasil diimpor ke riwayat lokal!`);
+        }
+
+        function importAllSharedHistory() {
+            const records = window._sharedHistoryRecords;
+            if (!records || records.length === 0) return;
+            let history = JSON.parse(localStorage.getItem('bbs_history') || '[]');
+            const imported = records.map(rec => ({ ...rec, id: 'BBS_' + Date.now() + Math.random(), timestamp: new Date().toISOString() }));
+            history = [...imported, ...history];
+            localStorage.setItem('bbs_history', JSON.stringify(history));
+            showToast(`${records.length} data berhasil diimpor ke riwayat lokal Anda!`);
         }
 
         // Render the 14 BBS Item Cards into HTML
