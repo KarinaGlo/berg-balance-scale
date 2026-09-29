@@ -333,6 +333,16 @@
             background: #0f766e;
         }
 
+        .btn-share {
+            background: linear-gradient(135deg, #7c3aed, #4f46e5);
+            color: var(--white);
+        }
+
+        .btn-share:hover {
+            background: linear-gradient(135deg, #6d28d9, #4338ca);
+            box-shadow: var(--shadow);
+        }
+
         .btn-danger {
             background: #ef4444;
             color: var(--white);
@@ -1252,6 +1262,9 @@
                     <button type="button" class="btn btn-secondary" onclick="openHistoryModal()">
                         📂 Riwayat
                     </button>
+                    <button type="button" class="btn btn-share" onclick="openShareModal()">
+                        🔗 Bagikan
+                    </button>
                     <button type="button" class="btn btn-success" onclick="triggerPrint()">
                         🖨️ Cetak / PDF
                     </button>
@@ -1264,6 +1277,15 @@
     </div>
 
     <div class="container">
+
+        <!-- Shared Link Banner (shown only when data loaded from URL) -->
+        <div id="sharedLinkBanner" style="display:none; background:linear-gradient(90deg,#ecfdf5,#f0fdf4); border:1px solid #6ee7b7; border-radius:12px; padding:14px 18px; margin-bottom:16px; align-items:center; gap:14px; font-size:13.5px; color:#065f46;">
+            <span style="font-size:22px;">📤</span>
+            <div style="flex:1;">
+                <strong>Data ini dibagikan dari link.</strong> Pemeriksaan oleh <strong id="sharedByName">Pemeriksa</strong> pada <strong id="sharedAtTime">-</strong>. Data ditampilkan secara read-only dari URL dan tidak mengubah riwayat lokal Anda.
+            </div>
+            <button type="button" class="btn btn-primary" onclick="saveSharedToLocal()" style="font-size:12px; padding:6px 12px;">💾 Simpan ke Lokal</button>
+        </div>
 
         <!-- Privacy Notice -->
         <div class="privacy-banner">
@@ -1445,6 +1467,34 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="closeHistoryModal()">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="modal-overlay" id="shareModal">
+        <div class="modal-box" style="max-width: 620px;">
+            <div class="modal-header">
+                <div class="modal-title">🔗 Bagikan Pemeriksaan via Link</div>
+                <button type="button" class="modal-close" onclick="closeShareModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div style="background:#f0f9ff; border:1px solid #bae6fd; border-radius:10px; padding:14px 16px; margin-bottom:16px; font-size:13.5px; color:#0369a1; line-height:1.6;">
+                    <strong>ℹ️ Cara Kerja:</strong> Data pemeriksaan dikodekan ke dalam URL. Siapapun yang membuka link ini akan langsung melihat data pemeriksaan ini secara lengkap — tanpa perlu login atau database.
+                </div>
+                <div id="shareWarning" style="background:#fef3c7; border:1px solid #fde68a; border-radius:10px; padding:14px 16px; margin-bottom:16px; font-size:13.5px; color:#92400e; display:none;">
+                    ⚠️ <strong>Peringatan:</strong> Masih ada item yang belum dinilai. Link ini hanya akan membagikan data yang sudah terisi.
+                </div>
+                <label style="font-size:13px; font-weight:700; color:#334155; display:block; margin-bottom:6px;">Link yang dapat dibagikan:</label>
+                <div style="display:flex; gap:8px;">
+                    <input type="text" id="shareUrlInput" readonly
+                        style="flex:1; padding:10px 14px; border:1px solid #cbd5e1; border-radius:8px; font-size:13px; background:#f8fafc; color:#334155; cursor:text;">
+                    <button type="button" class="btn btn-primary" onclick="copyShareUrl()" id="copyShareBtn">📋 Salin</button>
+                </div>
+                <div id="copySuccessMsg" style="font-size:13px; color:#15803d; font-weight:600; margin-top:8px; display:none;">✅ Link berhasil disalin ke clipboard!</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeShareModal()">Tutup</button>
             </div>
         </div>
     </div>
@@ -1661,13 +1711,134 @@
 
         // DOM Initialization
         document.addEventListener('DOMContentLoaded', () => {
-            // Set default date to today
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('examDate').value = today;
-
             renderBbsItems();
-            updateCalculations();
+
+            // Check if URL contains shared data
+            if (window.location.hash && window.location.hash.length > 1) {
+                loadFromUrl();
+            } else {
+                // Set default date to today only if not loading from URL
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('examDate').value = today;
+                updateCalculations();
+            }
         });
+
+        // =====================================================
+        // URL SHARING FUNCTIONS
+        // =====================================================
+
+        function openShareModal() {
+            const patientName = document.getElementById('patientName').value.trim();
+            if (!patientName) {
+                alert('Harap isi minimal Nama Pasien sebelum membuat link berbagi.');
+                document.getElementById('patientName').focus();
+                return;
+            }
+
+            const answeredCount = Object.keys(userScores).length;
+            const warningEl = document.getElementById('shareWarning');
+            warningEl.style.display = answeredCount < 14 ? 'block' : 'none';
+
+            const url = buildShareUrl();
+            document.getElementById('shareUrlInput').value = url;
+            document.getElementById('copySuccessMsg').style.display = 'none';
+            document.getElementById('shareModal').classList.add('active');
+        }
+
+        function closeShareModal() {
+            document.getElementById('shareModal').classList.remove('active');
+        }
+
+        function buildShareUrl() {
+            let totalScore = 0;
+            for (let i in userScores) totalScore += userScores[i];
+            const payload = {
+                patientName:  document.getElementById('patientName').value.trim(),
+                patientId:    document.getElementById('patientId').value.trim(),
+                examDate:     document.getElementById('examDate').value,
+                examLocation: document.getElementById('examLocation').value.trim(),
+                raterName:    document.getElementById('raterName').value.trim(),
+                additionalNotes: document.getElementById('additionalNotes').value.trim(),
+                scores:       { ...userScores },
+                totalScore:   totalScore,
+                answeredCount: Object.keys(userScores).length,
+                sharedAt:     new Date().toISOString()
+            };
+            const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+            return window.location.origin + window.location.pathname + '#shared=' + encoded;
+        }
+
+        function copyShareUrl() {
+            const input = document.getElementById('shareUrlInput');
+            input.select();
+            input.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(input.value).then(() => {
+                const msg = document.getElementById('copySuccessMsg');
+                const btn = document.getElementById('copyShareBtn');
+                msg.style.display = 'block';
+                btn.textContent = '✅ Tersalin!';
+                setTimeout(() => {
+                    msg.style.display = 'none';
+                    btn.textContent = '📋 Salin';
+                }, 3000);
+            }).catch(() => {
+                // Fallback
+                document.execCommand('copy');
+                alert('Link disalin!');
+            });
+        }
+
+        function loadFromUrl() {
+            try {
+                const hash = window.location.hash;
+                const match = hash.match(/^#shared=(.+)$/);
+                if (!match) {
+                    const today = new Date().toISOString().split('T')[0];
+                    document.getElementById('examDate').value = today;
+                    updateCalculations();
+                    return;
+                }
+
+                const decoded = JSON.parse(decodeURIComponent(escape(atob(match[1]))));
+
+                // Fill patient info
+                document.getElementById('patientName').value    = decoded.patientName    || '';
+                document.getElementById('patientId').value      = decoded.patientId      || '';
+                document.getElementById('examDate').value       = decoded.examDate       || new Date().toISOString().split('T')[0];
+                document.getElementById('examLocation').value   = decoded.examLocation   || '';
+                document.getElementById('raterName').value      = decoded.raterName      || '';
+                document.getElementById('additionalNotes').value = decoded.additionalNotes || '';
+
+                // Restore scores
+                userScores = {};
+                if (decoded.scores) {
+                    for (let itemId in decoded.scores) {
+                        selectScoreExplicitly(Number(itemId), decoded.scores[itemId]);
+                    }
+                }
+
+                updateCalculations();
+
+                // Show info banner that this was loaded from a shared link
+                const sharedBanner = document.getElementById('sharedLinkBanner');
+                if (sharedBanner) {
+                    const sharedAt = decoded.sharedAt
+                        ? new Date(decoded.sharedAt).toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' })
+                        : '-';
+                    document.getElementById('sharedByName').textContent = decoded.raterName || 'Pemeriksa';
+                    document.getElementById('sharedAtTime').textContent = sharedAt;
+                    sharedBanner.style.display = 'flex';
+                }
+
+            } catch (e) {
+                console.error('Gagal memuat data dari URL:', e);
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('examDate').value = today;
+                updateCalculations();
+                showToast('Gagal memuat data dari link. Format tidak valid.', '❌');
+            }
+        }
 
         // Render the 14 BBS Item Cards into HTML
         function renderBbsItems() {
@@ -1989,6 +2160,34 @@
                 updateCalculations();
                 showToast("Formulir berhasil direset.");
             }
+        }
+
+        // Save shared-link data to local localStorage
+        function saveSharedToLocal() {
+            const patientName = document.getElementById('patientName').value.trim();
+            if (!patientName) {
+                alert('Tidak ada data untuk disimpan.');
+                return;
+            }
+            let totalScore = 0;
+            for (let i in userScores) totalScore += userScores[i];
+            const record = {
+                id: 'BBS_' + Date.now(),
+                timestamp: new Date().toISOString(),
+                patientName: patientName,
+                patientId: document.getElementById('patientId').value.trim(),
+                examDate: document.getElementById('examDate').value,
+                examLocation: document.getElementById('examLocation').value.trim(),
+                raterName: document.getElementById('raterName').value.trim(),
+                additionalNotes: document.getElementById('additionalNotes').value.trim(),
+                scores: { ...userScores },
+                totalScore: totalScore,
+                answeredCount: Object.keys(userScores).length
+            };
+            let history = JSON.parse(localStorage.getItem('bbs_history') || '[]');
+            history.unshift(record);
+            localStorage.setItem('bbs_history', JSON.stringify(history));
+            showToast('Data dari link berhasil disimpan ke riwayat lokal Anda!');
         }
 
         // Toast Notification Helper
