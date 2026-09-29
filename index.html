@@ -1,0 +1,2008 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Berg Balance Scale (BBS) - Pengukuran Keseimbangan Digital</title>
+    <meta name="description"
+        content="Aplikasi Digital Pengukuran Berg Balance Scale (BBS) dalam Bahasa Indonesia. Formulir interaktif 14 item penilaian keseimbangan klinis.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #1e40af;
+            --primary-hover: #1d4ed8;
+            --primary-light: #eff6ff;
+            --primary-border: #bfdbfe;
+            --secondary: #0d9488;
+            --secondary-light: #ccfbf1;
+            --dark: #0f172a;
+            --gray-900: #1e293b;
+            --gray-700: #334155;
+            --gray-600: #475569;
+            --gray-500: #64748b;
+            --gray-400: #94a3b8;
+            --gray-300: #cbd5e1;
+            --gray-200: #e2e8f0;
+            --gray-100: #f1f5f9;
+            --gray-50: #f8fafc;
+            --white: #ffffff;
+
+            --score-4: #15803d;
+            --score-4-bg: #f0fdf4;
+            --score-4-border: #bbf7d0;
+
+            --score-3: #0369a1;
+            --score-3-bg: #f0f9ff;
+            --score-3-border: #bae6fd;
+
+            --score-2: #b45309;
+            --score-2-bg: #fffbeb;
+            --score-2-border: #fde68a;
+
+            --score-1: #c2410c;
+            --score-1-bg: #fff7ed;
+            --score-1-border: #ffedd5;
+
+            --score-0: #b91c1c;
+            --score-0-bg: #fef2f2;
+            --score-0-border: #fecaca;
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+            --radius-sm: 6px;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-full: 9999px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            background-image: url('./assets/bg_pattern.png');
+            background-repeat: repeat;
+            background-size: 300px auto;
+            background-attachment: fixed;
+            color: var(--gray-900);
+            line-height: 1.5;
+            padding-bottom: 100px;
+        }
+
+        .container {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        /* Top Bar & Navigation Header */
+        header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #0d9488 100%);
+            color: var(--white);
+            padding: 32px 0 28px;
+            box-shadow: 0 10px 25px -5px rgba(30, 58, 138, 0.25);
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%);
+            pointer-events: none;
+        }
+
+        .header-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header-title-center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 8px;
+        }
+
+        .header-title-center h1 {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--white);
+            line-height: 1.25;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-title-center .subtitle {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.92);
+            font-weight: 600;
+        }
+
+        /* Sticker Graphics (Transparent Background) */
+        .sticker-wrap {
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+            box-shadow: none;
+            flex-shrink: 0;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 130px;
+            height: 130px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .sticker-left {
+            transform: rotate(-5deg);
+        }
+
+        .sticker-right {
+            transform: rotate(5deg);
+        }
+
+        .sticker-wrap:hover {
+            transform: scale(1.12) rotate(0deg);
+        }
+
+        .sticker-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.25));
+        }
+
+        .badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 4px;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--white);
+            padding: 4px 14px;
+            border-radius: var(--radius-full);
+            font-size: 12px;
+            font-weight: 600;
+            backdrop-filter: blur(6px);
+        }
+
+        /* Sticky Score Header */
+        .sticky-score-bar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+            padding: 12px 0;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .score-bar-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .score-metrics {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .metric-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metric-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-500);
+        }
+
+        .metric-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--dark);
+        }
+
+        .metric-value span.max {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-500);
+        }
+
+        .progress-area {
+            flex: 1;
+            min-width: 180px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .progress-label-wrap {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .progress-bar-bg {
+            height: 10px;
+            background: var(--gray-200);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            width: 0%;
+            transition: width 0.4s ease;
+            border-radius: var(--radius-full);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--gray-700);
+            border-color: var(--gray-300);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-100);
+            color: var(--gray-900);
+        }
+
+        .btn-success {
+            background: var(--secondary);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            background: #0f766e;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: var(--white);
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        /* Card System */
+        .card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title-icon {
+            color: var(--primary);
+        }
+
+        /* Notice Banner */
+        .privacy-banner {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: var(--radius);
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: #0369a1;
+        }
+
+        /* Grid Layouts */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        label .required {
+            color: #ef4444;
+            margin-left: 2px;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            color: var(--gray-900);
+            background-color: var(--white);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.15);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        /* Accordion for General Instructions & Equipment */
+        details {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 24px;
+            transition: all 0.2s;
+        }
+
+        details[open] {
+            background: var(--white);
+            border-color: var(--gray-300);
+            box-shadow: var(--shadow-sm);
+        }
+
+        summary {
+            padding: 14px 20px;
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--gray-800);
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            outline: none;
+        }
+
+        summary:hover {
+            background-color: var(--gray-100);
+        }
+
+        .accordion-content {
+            padding: 16px 20px;
+            border-top: 1px solid var(--gray-200);
+            font-size: 14px;
+            color: var(--gray-700);
+        }
+
+        .accordion-content ul {
+            padding-left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* 14 Item Cards */
+        .item-card {
+            background: var(--white);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .item-card.answered {
+            border-color: var(--primary-border);
+            background: #fafcff;
+        }
+
+        .item-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .item-title-wrap {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .item-number {
+            background: var(--primary);
+            color: var(--white);
+            font-weight: 800;
+            font-size: 14px;
+            min-width: 32px;
+            height: 32px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .item-card.answered .item-number {
+            background: var(--secondary);
+        }
+
+        .item-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--dark);
+            line-height: 1.3;
+        }
+
+        .item-status-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            background: var(--gray-200);
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            flex-shrink: 0;
+        }
+
+        .item-card.answered .item-status-badge {
+            background: var(--secondary-light);
+            color: var(--secondary);
+        }
+
+        .item-instruction {
+            background: var(--gray-100);
+            border-left: 3px solid var(--primary);
+            padding: 10px 14px;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            font-size: 13.5px;
+            color: var(--gray-800);
+            margin-bottom: 16px;
+            line-height: 1.45;
+        }
+
+        .item-instruction strong {
+            color: var(--primary);
+        }
+
+        .special-note {
+            background: #fffbe6;
+            border: 1px solid #ffe58f;
+            color: #d46b08;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 12.5px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Option Grid / Radio Cards */
+        .options-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .option-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 14px;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.15s ease-in-out;
+            background: var(--white);
+            position: relative;
+        }
+
+        .option-card:hover {
+            border-color: var(--gray-400);
+            background: var(--gray-50);
+        }
+
+        .option-card input[type="radio"] {
+            margin-top: 3px;
+            accent-color: var(--primary);
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .score-pill {
+            font-size: 12px;
+            font-weight: 800;
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .option-text {
+            font-size: 13.5px;
+            color: var(--gray-800);
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        /* Active Option Styling per Score Level */
+        .option-card.selected-4 {
+            background: var(--score-4-bg);
+            border-color: var(--score-4-border);
+            box-shadow: 0 0 0 1px var(--score-4);
+        }
+
+        .option-card.selected-4 .score-pill {
+            background: var(--score-4);
+            color: var(--white);
+        }
+
+        .option-card.selected-3 {
+            background: var(--score-3-bg);
+            border-color: var(--score-3-border);
+            box-shadow: 0 0 0 1px var(--score-3);
+        }
+
+        .option-card.selected-3 .score-pill {
+            background: var(--score-3);
+            color: var(--white);
+        }
+
+        .option-card.selected-2 {
+            background: var(--score-2-bg);
+            border-color: var(--score-2-border);
+            box-shadow: 0 0 0 1px var(--score-2);
+        }
+
+        .option-card.selected-2 .score-pill {
+            background: var(--score-2);
+            color: var(--white);
+        }
+
+        .option-card.selected-1 {
+            background: var(--score-1-bg);
+            border-color: var(--score-1-border);
+            box-shadow: 0 0 0 1px var(--score-1);
+        }
+
+        .option-card.selected-1 .score-pill {
+            background: var(--score-1);
+            color: var(--white);
+        }
+
+        .option-card.selected-0 {
+            background: var(--score-0-bg);
+            border-color: var(--score-0-border);
+            box-shadow: 0 0 0 1px var(--score-0);
+        }
+
+        .option-card.selected-0 .score-pill {
+            background: var(--score-0);
+            color: var(--white);
+        }
+
+        /* Result Summary Box */
+        .summary-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 2px solid var(--primary-border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-top: 32px;
+            box-shadow: var(--shadow);
+        }
+
+        .summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .summary-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--dark);
+        }
+
+        .summary-score-display {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--primary-light);
+            border: 1px solid var(--primary-border);
+            padding: 16px 24px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+        }
+
+        .big-score {
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .big-score-denom {
+            font-size: 20px;
+            color: var(--gray-500);
+            font-weight: 600;
+        }
+
+        .summary-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .summary-info-item {
+            background: var(--white);
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--gray-200);
+        }
+
+        .summary-info-label {
+            font-size: 11px;
+            color: var(--gray-500);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .summary-info-val {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--gray-800);
+        }
+
+        .missing-warning {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            font-size: 13.5px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--dark);
+            color: var(--white);
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Modal styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            padding: 16px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-box {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            max-width: 600px;
+            width: 100%;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-lg);
+            transform: scale(0.95);
+            transition: transform 0.2s ease;
+            overflow: hidden;
+        }
+
+        .modal-overlay.active .modal-box {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--dark);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--gray-500);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: var(--radius-sm);
+        }
+
+        .modal-close:hover {
+            color: var(--dark);
+            background: var(--gray-100);
+        }
+
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            font-size: 14px;
+            color: var(--gray-700);
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            background: var(--gray-50);
+        }
+
+        .saved-item {
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--white);
+        }
+
+        .saved-item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .saved-item-title {
+            font-weight: 700;
+            color: var(--gray-900);
+            font-size: 15px;
+        }
+
+        .saved-item-meta {
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+
+        .saved-item-score {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-right: 12px;
+        }
+
+        .saved-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        /* References Section */
+        footer {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid var(--gray-200);
+            color: var(--gray-600);
+            font-size: 12.5px;
+            line-height: 1.6;
+        }
+
+        footer h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--gray-800);
+            margin-bottom: 8px;
+        }
+
+        footer ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        footer li {
+            position: relative;
+            padding-left: 14px;
+        }
+
+        footer li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--gray-400);
+        }
+
+        /* PRINT STYLESHEET OPTIMIZATION */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+                font-size: 11pt;
+                padding-bottom: 0 !important;
+            }
+
+            header,
+            .sticky-score-bar,
+            .privacy-banner,
+            .header-actions,
+            .btn,
+            details summary,
+            .missing-warning,
+            .item-status-badge,
+            footer {
+                display: none !important;
+            }
+
+            details {
+                border: none !important;
+                background: transparent !important;
+                margin-bottom: 10px !important;
+            }
+
+            details[open] summary+.accordion-content {
+                display: block !important;
+            }
+
+            .container {
+                max-width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .card {
+                border: 1px solid #ccc !important;
+                box-shadow: none !important;
+                padding: 12px !important;
+                margin-bottom: 12px !important;
+                page-break-inside: avoid;
+            }
+
+            .print-header {
+                display: block !important;
+                text-align: center;
+                border-bottom: 2px solid #000;
+                padding-bottom: 10px;
+                margin-bottom: 15px;
+            }
+
+            .print-header h1 {
+                font-size: 18pt;
+                color: black;
+            }
+
+            .print-header p {
+                font-size: 10pt;
+                color: #444;
+            }
+
+            .item-card {
+                border: 1px solid #ddd !important;
+                box-shadow: none !important;
+                padding: 10px !important;
+                margin-bottom: 10px !important;
+                page-break-inside: avoid;
+                background: white !important;
+            }
+
+            .option-card {
+                border: 1px solid #eee !important;
+                padding: 6px 8px !important;
+                background: white !important;
+                box-shadow: none !important;
+            }
+
+            .option-card input[type="radio"] {
+                accent-color: black;
+            }
+
+            .option-card[class*="selected-"] {
+                background: #f0f0f0 !important;
+                border: 1px solid #000 !important;
+                font-weight: bold;
+            }
+
+            .summary-card {
+                border: 2px solid #000 !important;
+                background: white !important;
+                page-break-inside: avoid;
+            }
+
+            .print-signature-area {
+                display: flex !important;
+                justify-content: space-between;
+                margin-top: 40px;
+                page-break-inside: avoid;
+            }
+
+            .signature-box {
+                text-align: center;
+                width: 200px;
+            }
+
+            .signature-line {
+                border-bottom: 1px solid #000;
+                margin-top: 50px;
+                margin-bottom: 4px;
+            }
+        }
+
+        .print-header,
+        .print-signature-area {
+            display: none;
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 768px) {
+            .header-banner {
+                gap: 12px;
+            }
+
+            .header-title-center h1 {
+                font-size: 22px;
+            }
+
+            .header-title-center .subtitle {
+                font-size: 13.5px;
+            }
+
+            .sticker-wrap {
+                width: 85px;
+                height: 85px;
+                border-radius: 14px;
+                padding: 5px;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .header-banner {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .header-title-center {
+                order: 1;
+                width: 100%;
+            }
+
+            .sticker-left {
+                order: 2;
+            }
+
+            .sticker-right {
+                order: 3;
+            }
+
+            .sticker-wrap {
+                width: 75px;
+                height: 75px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .score-bar-content {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+
+            .score-metrics {
+                justify-content: space-between;
+            }
+
+            .header-actions {
+                justify-content: stretch;
+            }
+
+            .header-actions .btn {
+                flex: 1;
+                justify-content: center;
+                font-size: 12px;
+                padding: 8px 10px;
+            }
+
+            .item-header {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .item-status-badge {
+                align-self: flex-start;
+            }
+
+            .big-score {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Printable Header (Only visible on window.print()) -->
+    <div class="print-header">
+        <h1>BERG BALANCE SCALE (BBS)</h1>
+        <p>Formulir Digital Pengukuran Keseimbangan Klinis</p>
+    </div>
+
+    <!-- Main Header -->
+    <header>
+        <div class="container">
+            <div class="header-banner">
+                <!-- Left Sticker (Gambar 2) -->
+                <div class="sticker-wrap sticker-left" title="Peralatan & Pengukuran Medis">
+                    <img src="./assets/sticker_left.png" alt="Stiker Alat Medis" class="sticker-img">
+                </div>
+
+                <!-- Title Center -->
+                <div class="header-title-center">
+                    <h1>Berg Balance Scale (BBS)</h1>
+                    <div class="subtitle">Formulir Digital Pengukuran Keseimbangan</div>
+                    <div class="badges">
+                        <span class="badge">14 Item</span>
+                        <span class="badge">Skor 0–4</span>
+                        <span class="badge">Maksimum 56</span>
+                        <span class="badge">Tanpa Login</span>
+                    </div>
+                </div>
+
+                <!-- Right Sticker (Gambar 3) -->
+                <div class="sticker-wrap sticker-right" title="Pemeriksa Fisioterapis / Klinisi">
+                    <img src="./assets/sticker_right.png" alt="Stiker Pemeriksa" class="sticker-img">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sticky Live Score Header -->
+    <div class="sticky-score-bar" id="stickyScoreBar">
+        <div class="container">
+            <div class="score-bar-content">
+                <div class="score-metrics">
+                    <div class="metric-box">
+                        <span class="metric-label">Total Skor</span>
+                        <div class="metric-value" id="topTotalScore">0 <span class="max">/ 56</span></div>
+                    </div>
+                    <div class="metric-box">
+                        <span class="metric-label">Item Terisi</span>
+                        <div class="metric-value" id="topItemCount">0 <span class="max">/ 14</span></div>
+                    </div>
+                </div>
+
+                <div class="progress-area">
+                    <div class="progress-label-wrap">
+                        <span>Kemajuan Pengisian</span>
+                        <span id="progressPercentage">0%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="progressBarFill"></div>
+                    </div>
+                </div>
+
+                <div class="header-actions">
+                    <button type="button" class="btn btn-primary" onclick="saveAssessment()">
+                        💾 Simpan
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="openHistoryModal()">
+                        📂 Riwayat
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="triggerPrint()">
+                        🖨️ Cetak / PDF
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="confirmReset()">
+                        🔄 Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- Privacy Notice -->
+        <div class="privacy-banner">
+            <span>🔒</span>
+            <div>
+                <strong>Privasi Terjamin:</strong> Seluruh data pasien hanya tersimpan secara lokal di browser Anda
+                (localStorage) dan tidak dikirimkan ke server manapun.
+            </div>
+        </div>
+
+        <!-- Identitas Pasien Form -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span class="card-title-icon">📋</span> IDENTITAS PEMERIKSAAN
+                </div>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="patientName">Nama Pasien <span class="required">*</span></label>
+                    <input type="text" id="patientName" placeholder="Masukkan nama pasien" required
+                        oninput="updateSummary()">
+                </div>
+                <div class="form-group">
+                    <label for="patientId">ID Pasien / No. Rekam Medis</label>
+                    <input type="text" id="patientId" placeholder="Contoh: RM-2026-001" oninput="updateSummary()">
+                </div>
+                <div class="form-group">
+                    <label for="examDate">Tanggal Pemeriksaan <span class="required">*</span></label>
+                    <input type="date" id="examDate" required oninput="updateSummary()">
+                </div>
+                <div class="form-group">
+                    <label for="examLocation">Lokasi Pemeriksaan</label>
+                    <input type="text" id="examLocation" placeholder="Contoh: Poliklinik Fisioterapi / Ruang Rawat"
+                        oninput="updateSummary()">
+                </div>
+                <div class="form-group">
+                    <label for="raterName">Nama Pemeriksa <span class="required">*</span></label>
+                    <input type="text" id="raterName" placeholder="Nama Fisioterapis / Pemeriksa" required
+                        oninput="updateSummary()">
+                </div>
+                <div class="form-group full-width">
+                    <label for="additionalNotes">Catatan Tambahan</label>
+                    <textarea id="additionalNotes"
+                        placeholder="Catatan kondisi spesifik pasien, penggunaan alat bantu, dsb."
+                        oninput="updateSummary()"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instruksi Umum Accordion -->
+        <details>
+            <summary>
+                <span>📖 Instruksi Umum Pemeriksaan</span>
+                <span>▼</span>
+            </summary>
+            <div class="accordion-content">
+                <ul>
+                    <li>Demonstrasikan setiap tugas dan/atau berikan instruksi sesuai yang tertulis pada masing-masing
+                        item.</li>
+                    <li>Saat memberikan skor, catat <strong>kategori respons terendah</strong> yang berlaku untuk setiap
+                        item.</li>
+                    <li>Pada sebagian besar item, subjek diminta untuk mempertahankan posisi tertentu selama waktu yang
+                        ditentukan.</li>
+                    <li>Poin akan dikurangi secara bertahap jika persyaratan waktu atau jarak tidak terpenuhi, jika
+                        kinerja subjek memerlukan supervisi, atau jika subjek menyentuh dukungan eksternal/menerima
+                        bantuan dari pemeriksa.</li>
+                    <li>Subjek harus memahami bahwa mereka harus menjaga keseimbangan saat mencoba melakukan tugas.</li>
+                    <li>Pilihan kaki mana yang digunakan untuk berdiri atau seberapa jauh meraih diserahkan kepada
+                        subjek. Penilaian yang kurang baik akan memengaruhi kinerja dan penilaian skor.</li>
+                </ul>
+            </div>
+        </details>
+
+        <!-- Peralatan Accordion -->
+        <details>
+            <summary>
+                <span>🛠️ Peralatan yang Diperlukan</span>
+                <span>▼</span>
+            </summary>
+            <div class="accordion-content">
+                <ul>
+                    <li><strong>Stopwatch</strong> atau jam tangan dengan jarum detik.</li>
+                    <li><strong>Penggaris</strong> atau indikator ukuran 2, 5, dan 10 inci (5, 12, dan 25 cm).</li>
+                    <li><strong>Kursi</strong> dengan tinggi yang wajar (tinggi standar).</li>
+                    <li><strong>Step / Stool</strong> (anak tangga atau bangku kecil dengan tinggi anak tangga
+                        rata-rata) untuk item #12.</li>
+                </ul>
+            </div>
+        </details>
+
+        <!-- Container 14 Items Berg Balance Scale -->
+        <div id="bbsItemsContainer">
+            <!-- Dynamic HTML rendered via JS -->
+        </div>
+
+        <!-- Summary & Results Box -->
+        <div class="summary-card" id="summaryCard">
+            <div class="summary-header">
+                <div class="summary-title">📊 Ringkasan Pemeriksaan</div>
+                <div class="item-status-badge" id="summaryStatusBadge">Inkomplit</div>
+            </div>
+
+            <div class="missing-warning" id="missingWarning">
+                ⚠️ Masih terdapat <span id="missingCount">0</span> item yang belum dinilai. Harap lengkapi semua item
+                untuk hasil yang akurat.
+            </div>
+
+            <div class="summary-score-display">
+                <div>
+                    <div class="metric-label" style="color: var(--primary);">TOTAL SKOR BBS</div>
+                    <div class="big-score" id="summaryTotalScore">0 <span class="big-score-denom">/ 56</span></div>
+                </div>
+                <div style="margin-left: auto; text-align: right;">
+                    <div class="metric-label">STATUS SKOR</div>
+                    <div style="font-size: 16px; font-weight: 700; color: var(--gray-800);" id="summaryItemRatio">0 / 14
+                        Item Dinilai</div>
+                </div>
+            </div>
+
+            <div class="summary-info-grid">
+                <div class="summary-info-item">
+                    <div class="summary-info-label">Nama Pasien</div>
+                    <div class="summary-info-val" id="sumPatientName">-</div>
+                </div>
+                <div class="summary-info-item">
+                    <div class="summary-info-label">ID Pasien / No. RM</div>
+                    <div class="summary-info-val" id="sumPatientId">-</div>
+                </div>
+                <div class="summary-info-item">
+                    <div class="summary-info-label">Tanggal Pemeriksaan</div>
+                    <div class="summary-info-val" id="sumExamDate">-</div>
+                </div>
+                <div class="summary-info-item">
+                    <div class="summary-info-label">Pemeriksa</div>
+                    <div class="summary-info-val" id="sumRaterName">-</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Print Signatures Section (Visible in Print Only) -->
+        <div class="print-signature-area">
+            <div class="signature-box">
+                <p>Pasien / Keluarga</p>
+                <div class="signature-line"></div>
+                <p style="font-size: 9pt;">( Tanda Tangan & Nama )</p>
+            </div>
+            <div class="signature-box">
+                <p>Pemeriksa / Fisioterapis</p>
+                <div class="signature-line"></div>
+                <p style="font-size: 9pt;" id="printRaterSignature">( Nama Pemeriksa )</p>
+            </div>
+        </div>
+
+        <!-- References Footer -->
+        <footer>
+            <h4>📚 Referensi Dokumen PDF</h4>
+            <ul>
+                <li>Wood-Dauphinee S, Berg K, Bravo G, Williams JI. The Balance Scale: Responding to clinically
+                    meaningful changes. <em>Canadian Journal of Rehabilitation</em>, 10:35–50, 1997.</li>
+                <li>Berg K, Wood-Dauphinee S, Williams JI. The Balance Scale: Reliability assessment for elderly
+                    residents and patients with an acute stroke. <em>Scand J Rehab Med</em>, 27:27–36, 1995.</li>
+                <li>Berg K, Wood-Dauphinee S, Williams J, Gayton D. Measuring balance in the elderly: preliminary
+                    development of an instrument. <em>Physiotherapy Canada</em>, 41:304-11, 1989.</li>
+            </ul>
+        </footer>
+
+    </div>
+
+    <!-- History Modal -->
+    <div class="modal-overlay" id="historyModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-title">📂 Riwayat Pemeriksaan Tersimpan</div>
+                <button type="button" class="modal-close" onclick="closeHistoryModal()">✕</button>
+            </div>
+            <div class="modal-body" id="historyModalBody">
+                <!-- Dynamic list -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeHistoryModal()">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span id="toastIcon">✅</span>
+        <span id="toastMessage">Pesan Toast</span>
+    </div>
+
+    <script>
+        // Data Structure for the 14 Items according to Berg Balance Scale PDF
+        const bbsItemsData = [
+            {
+                id: 1,
+                title: "Duduk ke Berdiri",
+                titleEn: "SITTING TO STANDING",
+                instruction: "Silakan berdiri. Usahakan untuk tidak menggunakan tangan Anda sebagai tumpuan.",
+                specialNote: null,
+                options: [
+                    { score: 4, text: "Mampu berdiri tanpa menggunakan tangan dan menstabilkan diri secara mandiri" },
+                    { score: 3, text: "Mampu berdiri secara mandiri dengan menggunakan tangan" },
+                    { score: 2, text: "Mampu berdiri menggunakan tangan setelah beberapa kali mencoba" },
+                    { score: 1, text: "Membutuhkan bantuan minimal untuk berdiri atau menstabilkan diri" },
+                    { score: 0, text: "Membutuhkan bantuan sedang atau maksimal untuk berdiri" }
+                ]
+            },
+            {
+                id: 2,
+                title: "Berdiri Tanpa Pegangan",
+                titleEn: "STANDING UNSUPPORTED",
+                instruction: "Silakan berdiri selama dua menit tanpa berpegangan.",
+                specialNote: "Petunjuk Khusus PDF: Jika pasien mampu berdiri 2 menit tanpa pegangan (Skor 4), berikan skor penuh (4) untuk item #3 (Duduk Tanpa Sandaran) dan langsung lanjut ke item #4.",
+                options: [
+                    { score: 4, text: "Mampu berdiri dengan aman selama 2 menit" },
+                    { score: 3, text: "Mampu berdiri selama 2 menit dengan pengawasan" },
+                    { score: 2, text: "Mampu berdiri 30 detik tanpa pegangan" },
+                    { score: 1, text: "Membutuhkan beberapa kali mencoba untuk berdiri 30 detik tanpa pegangan" },
+                    { score: 0, text: "Tidak mampu berdiri 30 detik tanpa bantuan" }
+                ]
+            },
+            {
+                id: 3,
+                title: "Duduk Tanpa Sandaran dengan Kaki Ditopang di Lantai atau Bangku",
+                titleEn: "SITTING WITH BACK UNSUPPORTED BUT FEET SUPPORTED ON FLOOR OR ON A STOOL",
+                instruction: "Silakan duduk dengan tangan dilipat selama 2 menit.",
+                specialNote: null,
+                options: [
+                    { score: 4, text: "Mampu duduk dengan aman dan stabil selama 2 menit" },
+                    { score: 3, text: "Mampu duduk selama 2 menit di bawah pengawasan" },
+                    { score: 2, text: "Mampu duduk selama 30 detik" },
+                    { score: 1, text: "Mampu duduk selama 10 detik" },
+                    { score: 0, text: "Tidak mampu duduk tanpa tumpuan selama 10 detik" }
+                ]
+            },
+            {
+                id: 4,
+                title: "Berdiri ke Duduk",
+                titleEn: "STANDING TO SITTING",
+                instruction: "Silakan duduk kembali.",
+                specialNote: null,
+                options: [
+                    { score: 4, text: "Duduk dengan aman dengan penggunaan tangan minimal" },
+                    { score: 3, text: "Mengontrol penurunan posisi dengan menggunakan tangan" },
+                    { score: 2, text: "Menggunakan bagian belakang kaki pada kursi untuk mengontrol penurunan posisi" },
+                    { score: 1, text: "Duduk secara mandiri tetapi kontrol penurunan posisi kurang teratur (uncontrolled descent)" },
+                    { score: 0, text: "Membutuhkan bantuan untuk duduk" }
+                ]
+            },
+            {
+                id: 5,
+                title: "Transfer",
+                titleEn: "TRANSFERS",
+                instruction: "Atur kursi untuk perpindahan pivot (pivot transfer). Minta pasien berpindah ke arah kursi dengan sandaran lengan dan ke arah kursi tanpa sandaran lengan. Anda dapat menggunakan dua kursi (satu dengan sandaran dan satu tanpa sandaran) atau tempat tidur dan kursi.",
+                specialNote: null,
+                options: [
+                    { score: 4, text: "Mampu transfer dengan aman dengan sedikit penggunaan tangan" },
+                    { score: 3, text: "Mampu transfer dengan aman tetapi jelas membutuhkan penggunaan tangan" },
+                    { score: 2, text: "Mampu transfer dengan isyarat verbal dan/atau pengawasan" },
+                    { score: 1, text: "Membutuhkan bantuan satu orang" },
+                    { score: 0, text: "Membutuhkan bantuan dua orang atau pengawasan ketat agar aman" }
+                ]
+            },
+            {
+                id: 6,
+                title: "Berdiri Tanpa Pegangan dengan Mata Tertutup",
+                titleEn: "STANDING UNSUPPORTED WITH EYES CLOSED",
+                instruction: "Silakan tutup mata Anda dan berdiri tenang selama 10 detik.",
+                specialNote: null,
+                options: [
+                    { score: 4, text: "Mampu berdiri 10 detik dengan aman" },
+                    { score: 3, text: "Mampu berdiri 10 detik dengan pengawasan" },
+                    { score: 2, text: "Mampu berdiri 3 detik" },
+                    { score: 1, text: "Tidak mampu memejamkan mata 3 detik tetapi tetap stabil" },
+                    { score: 0, text: "Membutuhkan bantuan agar tidak jatuh" }
+                ]
+            },
+            {
+                id: 7,
+                title: "Berdiri Tanpa Pegangan dengan Kedua Kaki Rapat",
+                titleEn: "STANDING UNSUPPORTED WITH FEET TOGETHER",
+                instruction: "Rapatkan kedua kaki Anda dan berdiri tanpa berpegangan.",
+                specialNote: null,
+                options: [
+                    { score: 4, text: "Mampu merapatkan kaki secara mandiri dan berdiri 1 menit dengan aman" },
+                    { score: 3, text: "Mampu merapatkan kaki secara mandiri dan berdiri selama 1 menit dengan pengawasan" },
+                    { score: 2, text: "Mampu merapatkan kaki secara mandiri tetapi tidak mampu bertahan selama 30 detik" },
+                    { score: 1, text: "Membutuhkan bantuan untuk mencapai posisi, tetapi mampu berdiri 15 detik dengan kaki rapat" },
+                    { score: 0, text: "Membutuhkan bantuan untuk mencapai posisi dan tidak mampu bertahan selama 15 detik" }
+                ]
+            },
+            {
+                id: 8,
+                title: "Meraih ke Depan dengan Lengan Terentang Saat Berdiri",
+                titleEn: "REACHING FORWARD WITH OUTSTRETCHED ARM WHILE STANDING",
+                instruction: "Angkat lengan hingga 90 derajat. Luruskan jari-jari Anda dan raih ke depan sejauh yang Anda bisa. (Pemeriksa meletakkan penggaris di ujung jari saat lengan 90 derajat. Jari tidak boleh menyentuh penggaris saat meraih. Jarak yang dicatat adalah jarak jangkauan jari ke depan saat posisi condong paling maksimal. Jika memungkinkan, minta pasien menggunakan kedua lengan saat meraih untuk menghindari rotasi batang tubuh/trunk.)",
+                specialNote: null,
+                options: [
+                    { score: 4, text: "Dapat meraih ke depan dengan percaya diri > 25 cm (10 inci)" },
+                    { score: 3, text: "Dapat meraih ke depan > 12 cm dengan aman (5 inci)" },
+                    { score: 2, text: "Dapat meraih ke depan > 5 cm dengan aman (2 inci)" },
+                    { score: 1, text: "Meraih ke depan tetapi membutuhkan pengawasan" },
+                    { score: 0, text: "Kehilangan keseimbangan saat mencoba / membutuhkan tumpuan eksternal" }
+                ]
+            },
+            {
+                id: 9,
+                title: "Mengambil Benda dari Lantai dari Posisi Berdiri",
+                titleEn: "PICK UP OBJECT FROM THE FLOOR FROM A STANDING POSITION",
+                instruction: "Ambil sepatu/sandal yang diletakkan di depan kaki Anda.",
+                specialNote: null,
+                options: [
+                    { score: 4, text: "Mampu mengambil sandal dengan aman dan mudah" },
+                    { score: 3, text: "Mampu mengambil sandal tetapi membutuhkan pengawasan" },
+                    { score: 2, text: "Tidak mampu mengambil tetapi dapat meraih 2–5 cm (1–2 inci) dari sandal dan menjaga keseimbangan secara mandiri" },
+                    { score: 1, text: "Tidak mampu mengambil dan membutuhkan pengawasan saat mencoba" },
+                    { score: 0, text: "Tidak mampu mencoba / membutuhkan bantuan agar tidak kehilangan keseimbangan atau jatuh" }
+                ]
+            },
+            {
+                id: 10,
+                title: "Menoleh ke Belakang melalui Bahu Kiri dan Kanan Saat Berdiri",
+                titleEn: "TURNING TO LOOK BEHIND OVER LEFT AND RIGHT SHOULDERS WHILE STANDING",
+                instruction: "Menolehlah untuk melihat langsung ke belakang melalui bahu kiri. Ulangi ke arah kanan. Pemeriksa dapat memilih objek di belakang pasien untuk melatih gerakan putaran yang lebih baik.",
+                specialNote: null,
+                options: [
+                    { score: 4, text: "Melihat ke belakang dari kedua sisi dan perpindahan berat badan (weight shift) baik" },
+                    { score: 3, text: "Melihat ke belakang hanya pada satu sisi, sisi lain menunjukkan perpindahan berat badan yang kurang" },
+                    { score: 2, text: "Menoleh ke samping saja tetapi dapat mempertahankan keseimbangan" },
+                    { score: 1, text: "Membutuhkan pengawasan saat menoleh" },
+                    { score: 0, text: "Membutuhkan bantuan agar tidak kehilangan keseimbangan atau jatuh" }
+                ]
+            },
+            {
+                id: 11,
+                title: "Berputar 360 Derajat",
+                titleEn: "TURN 360 DEGREES",
+                instruction: "Berputarlah penuh dalam satu lingkaran. Berhenti sejenak. Kemudian berputarlah penuh dalam lingkaran ke arah sebaliknya.",
+                specialNote: null,
+                options: [
+                    { score: 4, text: "Mampu berputar 360 derajat dengan aman dalam waktu 4 detik atau kurang" },
+                    { score: 3, text: "Mampu berputar 360 derajat dengan aman hanya ke satu sisi dalam 4 detik atau kurang" },
+                    { score: 2, text: "Mampu berputar 360 derajat dengan aman tetapi lambat" },
+                    { score: 1, text: "Membutuhkan pengawasan ketat atau isyarat verbal" },
+                    { score: 0, text: "Membutuhkan bantuan saat berputar" }
+                ]
+            },
+            {
+                id: 12,
+                title: "Menempatkan Kaki Bergantian pada Anak Tangga/Step Saat Berdiri Tanpa Pegangan",
+                titleEn: "PLACING ALTERNATE FOOT ON STEP OR STOOL WHILE STANDING UNSUPPORTED",
+                instruction: "Tempatkan masing-masing kaki secara bergantian di atas anak tangga/stool. Lanjutkan sampai masing-masing kaki menyentuh anak tangga/stool sebanyak 4 kali (total 8 langkah).",
+                specialNote: null,
+                options: [
+                    { score: 4, text: "Mampu berdiri secara mandiri dan aman serta menyelesaikan 8 langkah dalam 20 detik" },
+                    { score: 3, text: "Mampu berdiri secara mandiri dan menyelesaikan 8 langkah dalam > 20 detik" },
+                    { score: 2, text: "Mampu menyelesaikan 4 langkah tanpa alat bantu dengan pengawasan" },
+                    { score: 1, text: "Mampu menyelesaikan > 2 langkah, membutuhkan bantuan minimal" },
+                    { score: 0, text: "Membutuhkan bantuan agar tidak jatuh / tidak mampu mencoba" }
+                ]
+            },
+            {
+                id: 13,
+                title: "Berdiri Tanpa Pegangan dengan Satu Kaki di Depan",
+                titleEn: "STANDING UNSUPPORTED ONE FOOT IN FRONT",
+                instruction: "(DEMONSTRASIKAN KEPADA PASIEN) Tempatkan satu kaki tepat di depan kaki lainnya. Jika Anda merasa tidak mampu meletakkan kaki tepat di depan, cobalah melangkah cukup jauh ke depan sehingga tumit kaki depan berada di depan jari kaki belakang. (Untuk mendapat skor 3, panjang langkah harus melebihi panjang kaki lainnya dan lebar posisi mendekati lebar langkah normal pasien).",
+                specialNote: null,
+                options: [
+                    { score: 4, text: "Mampu menempatkan kaki posisi tandem secara mandiri dan bertahan selama 30 detik" },
+                    { score: 3, text: "Mampu menempatkan kaki di depan kaki lainnya secara mandiri dan bertahan selama 30 detik" },
+                    { score: 2, text: "Mampu mengambil langkah kecil secara mandiri dan bertahan selama 30 detik" },
+                    { score: 1, text: "Membutuhkan bantuan untuk melangkah tetapi mampu bertahan selama 15 detik" },
+                    { score: 0, text: "Kehilangan keseimbangan saat melangkah atau berdiri" }
+                ]
+            },
+            {
+                id: 14,
+                title: "Berdiri dengan Satu Kaki",
+                titleEn: "STANDING ON ONE LEG",
+                instruction: "Berdirilah di atas satu kaki selama yang Anda bisa tanpa berpegangan.",
+                specialNote: null,
+                options: [
+                    { score: 4, text: "Mampu mengangkat kaki secara mandiri dan bertahan > 10 detik" },
+                    { score: 3, text: "Mampu mengangkat kaki secara mandiri dan bertahan 5–10 detik" },
+                    { score: 2, text: "Mampu mengangkat kaki secara mandiri dan bertahan = atau > 3 detik" },
+                    { score: 1, text: "Mencoba mengangkat kaki, tidak mampu bertahan 3 detik tetapi tetap berdiri secara mandiri" },
+                    { score: 0, text: "Tidak mampu mencoba atau membutuhkan bantuan untuk mencegah jatuh" }
+                ]
+            }
+        ];
+
+        // State Store
+        let userScores = {};
+
+        // DOM Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set default date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('examDate').value = today;
+
+            renderBbsItems();
+            updateCalculations();
+        });
+
+        // Render the 14 BBS Item Cards into HTML
+        function renderBbsItems() {
+            const container = document.getElementById('bbsItemsContainer');
+            container.innerHTML = '';
+
+            bbsItemsData.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.id = `item-card-${item.id}`;
+
+                let specialNoteHtml = item.specialNote ?
+                    `<div class="special-note">ℹ️ ${item.specialNote}</div>` : '';
+
+                let optionsHtml = item.options.map(opt => {
+                    return `
+                        <label class="option-card" id="option-label-${item.id}-${opt.score}">
+                            <input type="radio" 
+                                   name="bbs_item_${item.id}" 
+                                   value="${opt.score}" 
+                                   onchange="onScoreSelect(${item.id}, ${opt.score})">
+                            <span class="score-pill">${opt.score}</span>
+                            <span class="option-text">${opt.text}</span>
+                        </label>
+                    `;
+                }).join('');
+
+                card.innerHTML = `
+                    <div class="item-header">
+                        <div class="item-title-wrap">
+                            <div class="item-number">${item.id}</div>
+                            <div>
+                                <div class="item-name">${item.title}</div>
+                            </div>
+                        </div>
+                        <div class="item-status-badge" id="item-status-${item.id}">Belum Dinilai</div>
+                    </div>
+
+                    <div class="item-instruction">
+                        <strong>Instruksi:</strong> ${item.instruction}
+                    </div>
+
+                    ${specialNoteHtml}
+
+                    <div class="options-group">
+                        ${optionsHtml}
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        // Handle Score Selection
+        function onScoreSelect(itemId, score) {
+            userScores[itemId] = score;
+
+            // Highlight Item Card as answered
+            const card = document.getElementById(`item-card-${itemId}`);
+            if (card) card.classList.add('answered');
+
+            const statusBadge = document.getElementById(`item-status-${itemId}`);
+            if (statusBadge) statusBadge.innerText = `Skor: ${score}`;
+
+            // Highlight Option Card
+            const itemObj = bbsItemsData.find(i => i.id === itemId);
+            itemObj.options.forEach(opt => {
+                const label = document.getElementById(`option-label-${itemId}-${opt.score}`);
+                if (label) {
+                    // remove all score selection classes
+                    label.classList.remove('selected-0', 'selected-1', 'selected-2', 'selected-3', 'selected-4');
+                    if (opt.score === score) {
+                        label.classList.add(`selected-${score}`);
+                    }
+                }
+            });
+
+            // Special rule handling for Item #2 -> Item #3
+            if (itemId === 2 && score === 4) {
+                // Check if item 3 is not already filled
+                if (userScores[3] === undefined) {
+                    if (confirm("Item #2 mendapat Skor 4 (Berdiri Tanpa Pegangan 2 Menit).\n\nSesuai instruksi PDF:\n'Jika pasien mampu berdiri 2 menit tanpa pegangan, berikan skor penuh (4) untuk item #3 (Duduk Tanpa Sandaran) dan langsung lanjut ke item #4.'\n\nApakah Anda ingin otomatis memberikan Skor 4 untuk Item #3?")) {
+                        selectScoreExplicitly(3, 4);
+                    }
+                }
+            }
+
+            updateCalculations();
+        }
+
+        // Helper to set score programmatically
+        function selectScoreExplicitly(itemId, score) {
+            const radio = document.querySelector(`input[name="bbs_item_${itemId}"][value="${score}"]`);
+            if (radio) {
+                radio.checked = true;
+                onScoreSelect(itemId, score);
+            }
+        }
+
+        // Calculate Totals & Update UI Realtime
+        function updateCalculations() {
+            let totalScore = 0;
+            let answeredCount = 0;
+
+            for (let i = 1; i <= 14; i++) {
+                if (userScores[i] !== undefined) {
+                    totalScore += userScores[i];
+                    answeredCount++;
+                }
+            }
+
+            const percentage = Math.round((answeredCount / 14) * 100);
+
+            // Update Sticky Header
+            document.getElementById('topTotalScore').innerHTML = `${totalScore} <span class="max">/ 56</span>`;
+            document.getElementById('topItemCount').innerHTML = `${answeredCount} <span class="max">/ 14</span>`;
+            document.getElementById('progressPercentage').innerText = `${percentage}%`;
+            document.getElementById('progressBarFill').style.width = `${percentage}%`;
+
+            // Update Summary Card
+            document.getElementById('summaryTotalScore').innerHTML = `${totalScore} <span class="big-score-denom">/ 56</span>`;
+            document.getElementById('summaryItemRatio').innerText = `${answeredCount} / 14 Item Dinilai`;
+
+            const summaryStatusBadge = document.getElementById('summaryStatusBadge');
+            const missingWarning = document.getElementById('missingWarning');
+            const missingCountSpan = document.getElementById('missingCount');
+
+            const missingCount = 14 - answeredCount;
+
+            if (answeredCount === 14) {
+                summaryStatusBadge.innerText = 'Lengkap (14/14)';
+                summaryStatusBadge.style.background = 'var(--secondary-light)';
+                summaryStatusBadge.style.color = 'var(--secondary)';
+                missingWarning.style.display = 'none';
+            } else {
+                summaryStatusBadge.innerText = `Belum Lengkap (${answeredCount}/14)`;
+                summaryStatusBadge.style.background = '#fef3c7';
+                summaryStatusBadge.style.color = '#d97706';
+                if (missingCount > 0) {
+                    missingWarning.style.display = 'block';
+                    missingCountSpan.innerText = missingCount;
+                }
+            }
+
+            updateSummary();
+        }
+
+        // Update Patient Details in Summary Card
+        function updateSummary() {
+            const name = document.getElementById('patientName').value.trim() || '-';
+            const id = document.getElementById('patientId').value.trim() || '-';
+            const date = document.getElementById('examDate').value || '-';
+            const rater = document.getElementById('raterName').value.trim() || '-';
+
+            document.getElementById('sumPatientName').innerText = name;
+            document.getElementById('sumPatientId').innerText = id;
+            document.getElementById('sumExamDate').innerText = date;
+            document.getElementById('sumRaterName').innerText = rater;
+
+            // For Print view signature
+            document.getElementById('printRaterSignature').innerText = rater !== '-' ? `( ${rater} )` : '( Nama Pemeriksa )';
+        }
+
+        // Print Trigger with Validation
+        function triggerPrint() {
+            const answeredCount = Object.keys(userScores).length;
+            if (answeredCount < 14) {
+                const missing = 14 - answeredCount;
+                if (!confirm(`Peringatan: Masih terdapat ${missing} item yang belum dinilai.\n\nApakah Anda tetap ingin mencetak formulir ini?`)) {
+                    return;
+                }
+            }
+            window.print();
+        }
+
+        // LocalStorage - Save Assessment
+        function saveAssessment() {
+            const patientName = document.getElementById('patientName').value.trim();
+            const raterName = document.getElementById('raterName').value.trim();
+            const examDate = document.getElementById('examDate').value;
+
+            if (!patientName) {
+                alert("Harap isi Nama Pasien sebelum menyimpan data.");
+                document.getElementById('patientName').focus();
+                return;
+            }
+
+            const answeredCount = Object.keys(userScores).length;
+            let totalScore = 0;
+            for (let i in userScores) totalScore += userScores[i];
+
+            const record = {
+                id: 'BBS_' + Date.now(),
+                timestamp: new Date().toISOString(),
+                patientName: patientName,
+                patientId: document.getElementById('patientId').value.trim(),
+                examDate: examDate,
+                examLocation: document.getElementById('examLocation').value.trim(),
+                raterName: raterName,
+                additionalNotes: document.getElementById('additionalNotes').value.trim(),
+                scores: { ...userScores },
+                totalScore: totalScore,
+                answeredCount: answeredCount
+            };
+
+            let history = JSON.parse(localStorage.getItem('bbs_history') || '[]');
+            history.unshift(record); // newest first
+            localStorage.setItem('bbs_history', JSON.stringify(history));
+
+            showToast("Data pemeriksaan berhasil disimpan ke localStorage!");
+        }
+
+        // Open Saved History Modal
+        function openHistoryModal() {
+            const modal = document.getElementById('historyModal');
+            const body = document.getElementById('historyModalBody');
+
+            let history = JSON.parse(localStorage.getItem('bbs_history') || '[]');
+
+            if (history.length === 0) {
+                body.innerHTML = '<p style="text-align:center; color: var(--gray-500); padding: 20px 0;">Belum ada riwayat pemeriksaan yang disimpan.</p>';
+            } else {
+                body.innerHTML = history.map((rec, idx) => {
+                    const dt = new Date(rec.timestamp).toLocaleDateString('id-ID', {
+                        day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                    });
+                    return `
+                        <div class="saved-item">
+                            <div class="saved-item-info">
+                                <div class="saved-item-title">${rec.patientName} ${rec.patientId ? `(${rec.patientId})` : ''}</div>
+                                <div class="saved-item-meta">Tanggal: ${rec.examDate} | Dimuat: ${dt} | Pemeriksa: ${rec.raterName || '-'}</div>
+                            </div>
+                            <div style="display:flex; align-items:center;">
+                                <div class="saved-item-score">${rec.totalScore} / 56</div>
+                                <div class="saved-actions">
+                                    <button class="btn btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="loadRecord('${rec.id}')">Muat</button>
+                                    <button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="deleteRecord('${rec.id}')">Hapus</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            modal.classList.add('active');
+        }
+
+        function closeHistoryModal() {
+            document.getElementById('historyModal').classList.remove('active');
+        }
+
+        // Load Record
+        function loadRecord(recId) {
+            let history = JSON.parse(localStorage.getItem('bbs_history') || '[]');
+            const rec = history.find(r => r.id === recId);
+            if (!rec) return;
+
+            // Fill text fields
+            document.getElementById('patientName').value = rec.patientName || '';
+            document.getElementById('patientId').value = rec.patientId || '';
+            document.getElementById('examDate').value = rec.examDate || '';
+            document.getElementById('examLocation').value = rec.examLocation || '';
+            document.getElementById('raterName').value = rec.raterName || '';
+            document.getElementById('additionalNotes').value = rec.additionalNotes || '';
+
+            // Reset scores radio selection
+            resetFormInputsOnly();
+
+            // Set scores
+            userScores = { ...rec.scores };
+            for (let itemId in userScores) {
+                selectScoreExplicitly(Number(itemId), userScores[itemId]);
+            }
+
+            updateCalculations();
+            closeHistoryModal();
+            showToast(`Data pasien ${rec.patientName} berhasil dimuat!`);
+        }
+
+        // Delete Record
+        function deleteRecord(recId) {
+            if (!confirm("Apakah Anda yakin ingin menghapus data riwayat ini?")) return;
+            let history = JSON.parse(localStorage.getItem('bbs_history') || '[]');
+            history = history.filter(r => r.id !== recId);
+            localStorage.setItem('bbs_history', JSON.stringify(history));
+            openHistoryModal(); // Refresh modal
+            showToast("Riwayat berhasil dihapus.");
+        }
+
+        // Reset Form Inputs
+        function resetFormInputsOnly() {
+            userScores = {};
+            document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+
+            bbsItemsData.forEach(item => {
+                const card = document.getElementById(`item-card-${item.id}`);
+                if (card) card.classList.remove('answered');
+
+                const statusBadge = document.getElementById(`item-status-${item.id}`);
+                if (statusBadge) statusBadge.innerText = 'Belum Dinilai';
+
+                item.options.forEach(opt => {
+                    const label = document.getElementById(`option-label-${item.id}-${opt.score}`);
+                    if (label) label.classList.remove('selected-0', 'selected-1', 'selected-2', 'selected-3', 'selected-4');
+                });
+            });
+        }
+
+        function confirmReset() {
+            if (confirm("Apakah Anda yakin ingin menghapus seluruh input pemeriksaan saat ini?")) {
+                document.getElementById('patientName').value = '';
+                document.getElementById('patientId').value = '';
+                document.getElementById('examDate').value = new Date().toISOString().split('T')[0];
+                document.getElementById('examLocation').value = '';
+                document.getElementById('raterName').value = '';
+                document.getElementById('additionalNotes').value = '';
+
+                resetFormInputsOnly();
+                updateCalculations();
+                showToast("Formulir berhasil direset.");
+            }
+        }
+
+        // Toast Notification Helper
+        function showToast(message, icon = '✅') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').innerText = message;
+            document.getElementById('toastIcon').innerText = icon;
+
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>
